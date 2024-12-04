@@ -6,6 +6,10 @@ try:
 except ImportError:
     boto3 = None
 
+try:
+    import aioboto3
+except ImportError:
+    aioboto3 = None
 
 logger = logging.getLogger(__name__)
 

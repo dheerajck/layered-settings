@@ -27,7 +27,7 @@ class SSMLoader(BaseLoader):
 
 
 def _load_from_ssm(path, aws_region):
-    """ Return a dict of {section/key} -> value """
+    """Return a dict of {section/key} -> value"""
 
     # For production (aka ECS and docker) read from SSM store.
     ssm = boto3.client("ssm", region_name=aws_region)

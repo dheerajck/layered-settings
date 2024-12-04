@@ -46,7 +46,6 @@ class LayeredSettingsTests(unittest.TestCase):
                 "APP__section2__key1": "ghi",
             },
         ):
-
             self.assertEqual("abc", get_setting("section1", "key1"))
             self.assertEqual("ghi", get_setting("section2", "key1"))
 
@@ -65,7 +64,6 @@ class LayeredSettingsTests(unittest.TestCase):
                 "APP__section-1__key1": "abc",
             },
         ):
-
             self.assertEqual("abc", get_setting("section-1", "key1"))
 
     def test_normal_usage(self):
@@ -74,10 +72,14 @@ class LayeredSettingsTests(unittest.TestCase):
         get_setting = initialize_settings(
             sources=[
                 # Lowest priority is setting-defaults.ini.  All configuration values should be defaulted in here.
-                loaders.ConfigParserLoader(os.path.join(SCRIPT_DIR, "inifiles", "setting-defaults.ini")),
+                loaders.ConfigParserLoader(
+                    os.path.join(SCRIPT_DIR, "inifiles", "setting-defaults.ini")
+                ),
                 os.path.join(SCRIPT_DIR, "inifiles", "setting-overrides.ini"),
                 # If ENV is set and we are able/willing to reach out to AWS, do so..
-                loaders.SSMLoader(f"/app/stage/", aws_region="us-east-1") if ALLOW_SSM_CONFIGURATION else None,
+                loaders.SSMLoader(f"/app/stage/", aws_region="us-east-1")
+                if ALLOW_SSM_CONFIGURATION
+                else None,
                 # Top priority -- env var
                 loaders.EnvLoader("APP__{section}__{key}"),
             ]

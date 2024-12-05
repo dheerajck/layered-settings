@@ -22,7 +22,7 @@ setuptools.setup(
     ],
     zip_safe=False,
     extras_require={
-        "ssm": ["boto3"],
-        "aws": ["boto3"],
+        "ssm": ["boto3", "aioboto3"],
+        "aws": ["boto3", "aioboto3"],
     },
 )

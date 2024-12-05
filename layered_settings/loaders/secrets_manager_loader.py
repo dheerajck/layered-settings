@@ -137,7 +137,7 @@ async def _async_load_from_secrets_manager(path, aws_region):
             response = await client.list_secrets(**params)
             return response
 
-    async def secrets():
+    async def fetch_secrets_list():
         next_token = None
         while True:
             response = await get_secrets_by_path(next_token)
@@ -152,7 +152,7 @@ async def _async_load_from_secrets_manager(path, aws_region):
 
     _secrets = {}
 
-    async for secret in secrets():
+    async for secret in fetch_secrets_list():
         # Take the entire key and strip off the path prefix.
         # secret['Name'] will be eg /site/env/section/secret_key
         # and key might be like section/key

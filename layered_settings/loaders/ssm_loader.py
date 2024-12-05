@@ -94,7 +94,7 @@ async def _async_load_from_ssm(path, aws_region):
             response = await client.get_parameters_by_path(**params)
             return response
 
-    async def parameters():
+    async def fetch_parameters_list():
         next_token = None
         while True:
             response = await get_parameters_by_path(next_token)
@@ -110,7 +110,7 @@ async def _async_load_from_ssm(path, aws_region):
     _ssm_parameters = {}
     _using_local_config = False
 
-    async for param in parameters():
+    async for param in fetch_parameters_list():
         # Take the entire key and strip off the path prefix.
         # param['Name'] will be eg /site/env/section/key
         # and ssm_key might be like section/key

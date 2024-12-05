@@ -14,4 +14,3 @@ class CallableLoader(BaseLoader):
 
     def __str__(self):
         return f"dict source"
-

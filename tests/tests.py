@@ -46,7 +46,6 @@ class LayeredSettingsTests(unittest.TestCase):
                 "APP__section2__key1": "ghi",
             },
         ):
-
             self.assertEqual("abc", get_setting("section1", "key1"))
             self.assertEqual("ghi", get_setting("section2", "key1"))
 
@@ -65,7 +64,6 @@ class LayeredSettingsTests(unittest.TestCase):
                 "APP__section-1__key1": "abc",
             },
         ):
-
             self.assertEqual("abc", get_setting("section-1", "key1"))
 
     def test_normal_usage(self):

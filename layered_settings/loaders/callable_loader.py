@@ -13,4 +13,4 @@ class CallableLoader(BaseLoader):
         return self.func(section, key)
 
     def __str__(self):
-        return f"dict source"
+        return f'dict source'

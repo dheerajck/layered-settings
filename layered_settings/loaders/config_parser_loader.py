@@ -15,7 +15,7 @@ class ConfigParserLoader(BaseLoader):
             self.config = configparser.ConfigParser()
             self.config.read(self.path)
             # _get = functools.partial(_get_from_config_parser, cp)
-            logger.debug(f"Registered .ini filename source from {self.path}")
+            logger.debug(f'Registered .ini filename source from {self.path}')
         else:
             if not ignore_if_missing:
                 raise FileNotFoundError(self.path)
@@ -24,7 +24,7 @@ class ConfigParserLoader(BaseLoader):
         return _get_from_config_parser(self.config, section, key)
 
     def __str__(self):
-        return f"ConfigParser from {self.path}"
+        return f'ConfigParser from {self.path}'
 
 
 def _get_from_config_parser(cp, section, key):
@@ -32,4 +32,4 @@ def _get_from_config_parser(cp, section, key):
     try:
         return cp.get(section, key)
     except:
-        raise KeyError(section + "_" + key)
+        raise KeyError(section + '_' + key)

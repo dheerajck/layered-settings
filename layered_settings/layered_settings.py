@@ -19,28 +19,26 @@ def initialize_settings(sources):
         try:
             if isinstance(source, BaseLoader):
                 _sources.append(source)
-                logger.debug(f"Registered {source}.")
+                logger.debug(f'Registered {source}.')
 
             elif isinstance(source, dict):
                 _sources.append(DictLoader(source))
-                logger.debug(f"Registered dictionary source.")
+                logger.debug(f'Registered dictionary source.')
 
             elif callable(source):
                 _sources.append(CallableLoader(source))
-                logger.debug(f"Registered callable source {source}.")
+                logger.debug(f'Registered callable source {source}.')
 
             else:
                 if os.path.exists(source):
-                    if isinstance(source, str) and source.endswith(".ini"):
+                    if isinstance(source, str) and source.endswith('.ini'):
                         _sources.append(ConfigParserLoader(source))
-                    logger.debug(f"Registered .ini filename source from {source}")
+                    logger.debug(f'Registered .ini filename source from {source}')
                 else:
                     # print(f"Did not register .ini filename source from {source}, file does not exist.")
                     pass
         except Exception as exc:
-            logger.exception(
-                f"Exception while registering source {source}, quitting: {exc}"
-            )
+            logger.exception(f'Exception while registering source {source}, quitting: {exc}')
 
             raise
 
@@ -54,23 +52,17 @@ def _get_config_setting(initial_sources, sources, section, key, is_sensitive=Tru
         try:
             ret = source.get_setting(section, key)
             if is_sensitive:
-                logger.info(
-                    f"[{section}] {key} was set to XXXX from source {ctr+1} ({source})."
-                )
+                logger.info(f'[{section}] {key} was set to XXXX from source {ctr+1} ({source}).')
             else:
-                logger.info(
-                    f"[{section}] {key} was set to {ret} from source {ctr+1} ({source})."
-                )
+                logger.info(f'[{section}] {key} was set to {ret} from source {ctr+1} ({source}).')
 
             return ret
         except KeyError:
             continue
         except Exception as exc:
-            logger.exception(
-                f"Exception while getting config [{section}] {key} from {source_desc}, skipping: {exc}"
-            )
+            logger.exception(f'Exception while getting config [{section}] {key} from {source_desc}, skipping: {exc}')
             continue
-    logger.warning(f"Failed to find [{section}] {key} in {initial_sources}.")
+    logger.warning(f'Failed to find [{section}] {key} in {initial_sources}.')
     raise KeyError(key)
 
 
@@ -84,11 +76,11 @@ def parse_bool(b):
         return True
     if b is False:
         return False
-    if b.strip() == "":
+    if b.strip() == '':
         return None
     b = str(b).upper()[0]
-    if b in ["Y", "1", "T"]:
+    if b in ['Y', '1', 'T']:
         return True
-    if b in ["N", "0", "F"]:
+    if b in ['N', '0', 'F']:
         return False
     raise ValueError(b)

@@ -29,4 +29,4 @@ class EnvLoader(BaseLoader):
             raise KeyError(k)
 
     def __str__(self):
-        return f"env var using {self.env_var_format}"
+        return f'env var using {self.env_var_format}'

@@ -13,4 +13,4 @@ class DictLoader(BaseLoader):
         return self.data[section][key]
 
     def __str__(self):
-        return f"dict source"
+        return f'dict source'

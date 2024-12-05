@@ -19,4 +19,4 @@ class BaseLoader:
         pass
 
     def get_setting(self, section, key):
-        raise NotImplementedError("must implement in subclass.")
+        raise NotImplementedError('must implement in subclass.')

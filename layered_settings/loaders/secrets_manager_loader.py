@@ -137,22 +137,7 @@ async def _async_load_from_secrets_manager(path, aws_region):
             response = await client.list_secrets(**params)
             return response
 
-    async def fetch_secrets_list():
-        next_token = None
-        while True:
-            response = await get_secrets_by_path(next_token)
-            secrets = response['SecretList']
-            if len(secrets) == 0:
-                break
-            for parameter in secrets:
-                yield parameter
-            if 'NextToken' not in response:
-                break
-            next_token = response['NextToken']
-
-    _secrets = {}
-
-    async for secret in fetch_secrets_list():
+    async def get_secret_value(secret, _secrets_dict):
         # Take the entire key and strip off the path prefix.
         # secret['Name'] will be eg /site/env/section/secret_key
         # and key might be like section/key
@@ -160,8 +145,6 @@ async def _async_load_from_secrets_manager(path, aws_region):
         # otherwise, the secret_key will remain intact and the plaintext value will assigned to it.
         arn = secret['ARN']
         key = secret['Name'][len(path) :]
-
-        # secret_string = secrets_manager_client.get_secret_value(SecretId=arn)['SecretString']
 
         async with session.client('secretsmanager', region_name=aws_region) as client:
             response = await client.get_secret_value(SecretId=arn)
@@ -171,9 +154,37 @@ async def _async_load_from_secrets_manager(path, aws_region):
             secret = json.loads(secret_string)
             key = key.split('/')[0]
             for subkey, value in secret.items():
-                _secrets[key + '/' + subkey] = value
+                _secrets_dict[key + '/' + subkey] = value
         except json.JSONDecodeError:
             secret = secret_string
-            _secrets[key] = secret
+            _secrets_dict[key] = secret
+
+    async def fetch_all_secrets():
+        _secrets_dict = {}  # this will be updated by get_secret_value
+        next_token = None
+
+        tasks = []
+        while True:
+            response = await get_secrets_by_path(next_token)
+            secrets = response['SecretList']
+            if len(secrets) == 0:
+                break
+            for parameter in secrets:
+                import asyncio
+
+                new_task = asyncio.create_task(get_secret_value(parameter, _secrets_dict))
+                tasks.append(new_task)
+
+            if 'NextToken' not in response:
+                break
+
+            next_token = response['NextToken']
+
+        await asyncio.gather(*tasks)
+
+        # Updated _secrets_dict
+        return _secrets_dict
+
+    _secrets = await fetch_all_secrets()
 
     return _secrets

@@ -1,12 +1,13 @@
 import functools
-import io
+
 import logging
 import os
-import sys
-from configparser import RawConfigParser
+
+
 from .loaders import BaseLoader, ConfigParserLoader, DictLoader, CallableLoader
 
 logger = logging.getLogger(__name__)
+
 
 def initialize_settings(sources):
     _sources = []
@@ -45,7 +46,7 @@ def initialize_settings(sources):
 
 
 def _get_config_setting(initial_sources, sources, section, key, is_sensitive=True):
-    """ Iterate through sources and return first-available. """
+    """Iterate through sources and return first-available."""
 
     for ctr, (source_desc, source) in enumerate(zip(initial_sources, sources)):
         try:
@@ -66,7 +67,7 @@ def _get_config_setting(initial_sources, sources, section, key, is_sensitive=Tru
 
 
 def parse_bool(b):
-    """ Useful for environment variables, intelligently converts any reasonable string to a Python bool,
+    """Useful for environment variables, intelligently converts any reasonable string to a Python bool,
     or None if it is None or empty/whitespace string."""
 
     if b is None:

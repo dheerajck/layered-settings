@@ -1,9 +1,5 @@
-import functools
-import io
 import logging
-import os
-import sys
-from configparser import RawConfigParser
+
 
 try:
     import boto3

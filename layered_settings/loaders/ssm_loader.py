@@ -21,11 +21,16 @@ class SSMLoader(BaseLoader):
             raise Exception("To use SSMPath, please install the boto3 library.")
 
         if aioboto3 is None:
-            raise Exception("To use SSMPath, please install the aioboto3 library.")
+            raise Exception('To use SSMPath, please install the aioboto3 library.')
 
         self.path = path
         self.aws_region = aws_region
-        self._settings = _load_from_ssm(self.path, self.aws_region)
+
+        # self._settings = _load_from_ssm(self.path, self.aws_region)
+
+        import asyncio
+
+        self._settings = asyncio.run(_async_load_from_ssm(self.path, self.aws_region))
 
     def get_setting(self, section, key):
         return self._settings[f"{section}/{key}"]
@@ -79,13 +84,13 @@ async def _async_load_from_ssm(path, aws_region):
     session = aioboto3.Session()
 
     async def get_parameters_by_path(next_token=None):
-        params = {"Path": path, "Recursive": True, "WithDecryption": True}
+        params = {'Path': path, 'Recursive': True, 'WithDecryption': True}
         if next_token is not None:
-            params["NextToken"] = next_token
+            params['NextToken'] = next_token
 
         # return ssm.get_parameters_by_path(**params)
 
-        async with session.client("ssm", region_name=aws_region) as client:
+        async with session.client('ssm', region_name=aws_region) as client:
             response = await client.get_parameters_by_path(**params)
             return response
 
@@ -93,14 +98,14 @@ async def _async_load_from_ssm(path, aws_region):
         next_token = None
         while True:
             response = await get_parameters_by_path(next_token)
-            parameters = response["Parameters"]
+            parameters = response['Parameters']
             if len(parameters) == 0:
                 break
             for parameter in parameters:
                 yield parameter
-            if "NextToken" not in response:
+            if 'NextToken' not in response:
                 break
-            next_token = response["NextToken"]
+            next_token = response['NextToken']
 
     _ssm_parameters = {}
     _using_local_config = False
@@ -109,7 +114,7 @@ async def _async_load_from_ssm(path, aws_region):
         # Take the entire key and strip off the path prefix.
         # param['Name'] will be eg /site/env/section/key
         # and ssm_key might be like section/key
-        ssm_key = param["Name"][len(path) :]
-        _ssm_parameters[ssm_key] = param["Value"]
+        ssm_key = param['Name'][len(path) :]
+        _ssm_parameters[ssm_key] = param['Value']
 
     return _ssm_parameters
